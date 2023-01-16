@@ -1,0 +1,9 @@
+version: '3.2'
+
+services:
+  app:
+    build: .
+    volumes:
+      - /etc/passwd:/etc/passwd:cached
+      - /etc/group:/etc/group:cached
+      - .:/app:cached
