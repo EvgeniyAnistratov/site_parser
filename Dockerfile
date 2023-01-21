@@ -1,11 +1,6 @@
-FROM python:3.8.1-alpine
-
-COPY ./requirements.txt ./requirements-dev.txt /app/
-
+FROM python:3.10.0-alpine
 WORKDIR /app
-
+COPY ./requirements.txt ./requirements-dev.txt ./
 RUN pip install -r requirements.txt -r requirements-dev.txt
-
 COPY . .
-
 CMD python

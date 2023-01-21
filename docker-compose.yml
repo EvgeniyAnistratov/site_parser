@@ -1,9 +1,22 @@
-version: '3.2'
+version: '3.3'
 
 services:
+  db:
+    image: "postgres:14.6"
+    volumes:
+      - ./.data/postgres:${PG_DATA}
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      PGDATA: ${PG_DATA}
+    command: -p ${DB_PORT}
+
   app:
     build: .
+    container_name: python_site_parser
     volumes:
-      - /etc/passwd:/etc/passwd:cached
-      - /etc/group:/etc/group:cached
-      - .:/app:cached
+      - .:/app
+    tty: true
+    depends_on:
+      - db
