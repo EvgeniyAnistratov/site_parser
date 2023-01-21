@@ -4,7 +4,7 @@ import requests
 import time
 import tracemalloc
 
-import db_manager as mydb
+import core.db_manager as mydb
 
 
 TITLE_PATTERN = r"<title[^<>]*>(.+)<\/title>"

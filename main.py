@@ -5,8 +5,8 @@ import sys
 import psycopg2
 from dotenv import load_dotenv
 
-import db_manager as mydb
-from parser_manager import HtmlParser
+import core.db_manager as mydb
+from core.parser_manager import HtmlParser
 
 
 def validate_env_values(values: dict) -> dict:
