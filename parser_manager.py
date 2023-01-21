@@ -1,6 +1,8 @@
 import re
 from urllib.parse import urljoin
 import requests
+import time
+import tracemalloc
 
 import db_manager as mydb
 
@@ -12,14 +14,40 @@ CONTENT_TYPE_VALUE = "text/html"
 REQUEST_TIMEOUT = 5  # request timeout seconds
 
 
+def resource_profile(func):
+    def wrapper(*args, **kwargs):
+        tracemalloc.start()
+        start_world_time = time.time()
+        start_cpu_time = time.process_time()
+        func(*args, **kwargs)
+        end_cpu_time = time.process_time()
+        end_world_time = time.time()
+        _, peak_memory = tracemalloc.get_traced_memory()
+        tracemalloc.stop()
+        used_memory = peak_memory / 1024 / 1024  # MB
+        used_cpu_time = end_cpu_time - start_cpu_time
+        used_wold_time = end_world_time - start_world_time
+        print(f"Time and memory usage by '{func.__name__}' function.")
+        print(f"Maximum used memory: {used_memory:.3f} MB")
+        print(f"CPU Execution time: {used_cpu_time:.3f} seconds.")
+        print(f"All Execution time: {used_wold_time:.3f} seconds.")
+    return wrapper
+
+
 def re_search(content: str, pattern: str) -> tuple:
     matches = re.findall(pattern, content, re.MULTILINE)
     return matches
 
 
 class HtmlParser:
-    def __init__(self, connection):
+    def __init__(self, connection, base_url: str, depth: int):
         self._connection = connection
+        self.base_url = base_url
+        self.depth = depth
+
+    @resource_profile
+    def run_with_profile(self):
+        self.parse(self.base_url, self.depth, parent_id=None)
 
     def parse(self, base_url: str, depth: int, parent_id: int = None):
         """
